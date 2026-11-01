@@ -735,6 +735,32 @@ impl SolutionHandle {
         Ok(values)
     }
 
+    /// Per-combo best-response EV in chips for `player` at node `id`: what each hand
+    /// is worth here if `player` plays the best possible strategy from this node on,
+    /// against the opponent's solved average strategy. Same slot order, units and NaN
+    /// convention as combo_evs. Use it at an action's child node to value an action a
+    /// hand never takes (combo_evs reports such hands as uniform below the node).
+    pub fn combo_br_evs(&self, id: u32, player: u8) -> Result<Vec<f32>, JsValue> {
+        self.check_node(id)?;
+        self.check_player(player)?;
+        let opp_reach = self.reach(id, 1 - player, true);
+        let mut values = vec![0.0f32; self.game.live_combos(id, player).len()];
+        br::subtree_values(
+            &self.game,
+            id,
+            player,
+            &self.profile(),
+            &opp_reach,
+            true,
+            &mut values,
+        );
+        let mass = self.game.compatible_mass(id, player, &opp_reach);
+        for (v, m) in values.iter_mut().zip(&mass) {
+            *v = if *m > 0.0 { *v / *m } else { f32::NAN };
+        }
+        Ok(values)
+    }
+
     /// The weight each entry of [`SolutionHandle::combo_evs`] carries when aggregating,
     /// as a `Float32Array` in the same slot order.
     ///
