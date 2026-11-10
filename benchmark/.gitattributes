@@ -1,0 +1,2 @@
+# These scripts execute inside Linux build containers, including from Windows clones.
+*.sh text eol=lf

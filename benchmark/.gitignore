@@ -1,0 +1,15 @@
+# Private by default. Only these individually reviewed generic files may enter Git.
+# Do not add wildcard exceptions for reports, JSON, fixtures, archives or outputs.
+*
+!.gitignore
+!.gitattributes
+!README.md
+!check-public.mjs
+!build-pinned.ps1
+!build-pinned.sh
+!build-corrected.ps1
+!build-corrected.sh
+!confidence.mjs
+!m3.test.mjs
+!persistent-client.mjs
+!persistent-worker.mjs

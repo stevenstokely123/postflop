@@ -51,6 +51,18 @@ pub fn start() {
     console_error_panic_hook::set_once();
 }
 
+/// Seven-card showdown rank using the existing engine evaluator; larger is better.
+/// Does not inspect ranges or strategy and never uses EV to determine a winner.
+#[wasm_bindgen]
+pub fn showdown_rank(board: &str, holes: &str) -> Result<u32, JsValue> {
+    let b = cards::parse_cards(board).map_err(err)?;
+    let h = cards::parse_cards(holes).map_err(err)?;
+    if b.len() != 5 || h.len() != 2 { return Err(err("showdown requires five board and two hole cards")); }
+    let all: Vec<_> = b.iter().chain(h.iter()).copied().collect();
+    if cards::mask_of(&all).count_ones() != 7 { return Err(err("duplicate showdown card")); }
+    Ok(engine::evaluator::eval7(&[b[0],b[1],b[2],b[3],b[4],h[0],h[1]]))
+}
+
 fn err(msg: impl AsRef<str>) -> JsValue {
     JsValue::from_str(msg.as_ref())
 }

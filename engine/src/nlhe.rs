@@ -77,10 +77,9 @@
 //! numbers reduce to `win = P/2`, `lose = -P/2`. The general form is used anyway: it
 //! costs nothing and does not assume the tree only ever builds matched terminals.
 //!
-//! **Rake makes the game constant-sum, not zero-sum**: the two utilities sum to
-//! `-rake` instead of `0`, so `br::exploitability` is offset by the expected rake and
-//! no longer bottoms out at zero. Measure convergence against that shifted baseline, or
-//! solve rake-free. The milestone tests are rake-free.
+//! **Rake makes the game non-zero-sum**: utilities sum to `-rake`, which can
+//! vary across terminal pots. `br::exploitability` subtracts the profile EVs
+//! from both best-response values, reporting NashConv with actual expected rake.
 //!
 //! # Tournament payoffs (ICM), and why they are general-sum
 //!
@@ -778,7 +777,9 @@ impl Game for NlheGame {
         // An ICM spot is general-sum: the frozen field trades equity with the pair
         // whenever chips move, by a different amount at every terminal and not always
         // in the same direction. See the module docs.
-        self.icm.is_none()
+        // Rake varies with the final matched pot. Chip utilities then sum to
+        // minus rake, not zero: BR reporting must subtract both profile EVs.
+        self.icm.is_none() && self.cfg.rake.percent == 0.0
     }
 
     fn locked_strategy(&self, node: u32) -> Option<&[f32]> {

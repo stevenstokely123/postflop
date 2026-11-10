@@ -15,3 +15,14 @@ web/out/
 .playwright-cli/
 .dashclaw-local/
 .offlocal/
+
+# Local credentials and signing material. Examples contain placeholders only.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+.netrc
+.npmrc

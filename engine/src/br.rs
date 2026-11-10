@@ -22,9 +22,9 @@
 //! Values are divided by [`crate::game::Game::normalizer`] to come out as chips per
 //! hand rather than chips times total joint range mass.
 //!
-//! In a raked game the two terminal utilities sum to minus the rake instead of zero, so
-//! the sum is offset by the expected rake and no longer bottoms out at 0. Compare it
-//! against the raked game's own floor, or solve rake-free to check convergence.
+//! Raked games are not zero-sum: their report uses the sum of unilateral gains
+//! `(BR_0 - EV_0) + (BR_1 - EV_1)`, just like other general-sum payoffs. Subtracting
+//! the profile EVs accounts for actual expected rake, not the cap or root-pot rake.
 //!
 //! # NashConv, when the game is general-sum
 //!
